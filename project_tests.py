@@ -15,7 +15,10 @@ except ImportError:
 
 def _test_model(model, input_shape, output_sequence_length, french_vocab_size):
     if isinstance(model, Sequential):
-        model = model.model
+        try:
+            model = model.model
+        except AttributeError:
+            print("New Version of keras - Sequential has all expected attrs...")
 
     assert model.input_shape == (
         None,
@@ -31,14 +34,21 @@ def _test_model(model, input_shape, output_sequence_length, french_vocab_size):
     ), "Wrong output shape. Found output shape {} using parameters output_sequence_length={} and french_vocab_size={}".format(
         model.output_shape, output_sequence_length, french_vocab_size
     )
+    # <ACM> Added to fit TF2 Interface
+    try:
+        loss_functions = model.loss_functions
+    except AttributeError:
+        print("using newer version of keras....")
+        loss_functions = [model.loss]
 
     assert (
-        len(model.loss_functions) > 0
+        len(loss_functions) > 0
     ), "No loss function set.  Apply the `compile` function to the model."
 
     assert (
-        sparse_categorical_crossentropy in model.loss_functions
+        sparse_categorical_crossentropy in loss_functions
     ), "Not using `sparse_categorical_crossentropy` function for loss."
+    # //<ACM> Added to fit TF2 Interface
 
 
 def test_tokenize(tokenize):
