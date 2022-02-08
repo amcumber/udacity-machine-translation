@@ -38,7 +38,7 @@ def _test_model(model, input_shape, output_sequence_length, french_vocab_size):
     try:
         loss_functions = model.loss_functions
     except AttributeError:
-        print("using newer version of keras....")
+        print("Trying Tensorflow 2 version of keras...")
         loss_functions = [model.loss]
 
     assert (
